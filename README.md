@@ -1,5 +1,7 @@
 # Angular Style Guide
 
+Angular style guide for C2FO teams. Most of this guide is a direct fork of [John Papa's Angular Style Guide](https://github.com/johnpapa/angular-styleguide).
+
 *Opinionated Angular style guide for teams by [@john_papa](//twitter.com/john_papa)*
 
 If you are looking for an opinionated style guide for syntax, conventions, and structuring Angular applications, then step right in. These styles are based on my development experience with [Angular](//angularjs.org), presentations, [Pluralsight training courses](http://pluralsight.com/training/Authors/Details/john-papa) and working in teams.
@@ -126,18 +128,18 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
   // logger.js
   angular
       .module('app')
-      .factory('logger', logger);
+      .factory('loggerFactory', loggerFactory);
 
   // logger function is added as a global variable
-  function logger() { }
+  function loggerFactory() { }
 
   // storage.js
   angular
       .module('app')
-      .factory('storage', storage);
+      .factory('storageFactory', storageFactory);
 
   // storage function is added as a global variable
-  function storage() { }
+  function storageFactory() { }
   ```
 
   ```javascript
@@ -153,9 +155,9 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
       angular
           .module('app')
-          .factory('logger', logger);
+          .factory('loggerFactory', loggerFactory);
 
-      function logger() { }
+      function loggerFactory() { }
   })();
 
   // storage.js
@@ -164,9 +166,9 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
       angular
           .module('app')
-          .factory('storage', storage);
+          .factory('storageFactory', storageFactory);
 
-      function storage() { }
+      function storageFactory() { }
   })();
   ```
 
@@ -261,7 +263,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
   angular
       .module('app')
       .controller('Dashboard', function() { })
-      .factory('logger', function() { });
+      .factory('loggerFactory', function() { });
   ```
 
   ```javascript
@@ -279,9 +281,9 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
   // logger.js
   angular
       .module('app')
-      .factory('logger', logger);
+      .factory('loggerFactory', loggerFactory);
 
-  function logger() { }
+  function loggerFactory() { }
   ```
 
 **[Back to top](#table-of-contents)**
@@ -301,14 +303,14 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
   ```html
   <!-- avoid -->
-  <div ng-controller="Customer">
+  <div ng-controller="CustomerController">
       {{ name }}
   </div>
   ```
 
   ```html
   <!-- recommended -->
-  <div ng-controller="Customer as customer">
+  <div ng-controller="CustomerController as customerCtrl">
       {{ customer.name }}
   </div>
   ```
@@ -439,6 +441,16 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
       function search() {
         /* */
+      }
+      
+      /////////////
+      
+      function _privateMethod1() {
+        /* */ 
+      }
+      
+      function _privateMethod2() {
+        /* */ 
       }
   ```
 
@@ -625,7 +637,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
   - When a controller must be paired with a view and either component may be re-used by other controllers or views, define controllers along with their routes.
 
-    Note: If a View is loaded via another means besides a route, then use the `ng-controller="Avengers as vm"` syntax.
+    Note: If a View is loaded via another means besides a route, then use the `ng-controller="AvengersController as avengersCtrl"` syntax.
 
     *Why?*: Pairing the controller in the route allows different routes to invoke different pairs of controllers and views. When controllers are assigned in the view using [`ng-controller`](https://docs.angularjs.org/api/ng/directive/ngController), that view is always associated with the same controller.
 
@@ -647,7 +659,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
   ```html
   <!-- avengers.html -->
-  <div ng-controller="Avengers as vm">
+  <div ng-controller="AvengersController as avengerCtrl">
   </div>
   ```
 
@@ -664,7 +676,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
           .when('/avengers', {
               templateUrl: 'avengers.html',
               controller: 'Avengers',
-              controllerAs: 'vm'
+              controllerAs: 'avengers'
           });
   }
   ```
@@ -690,9 +702,9 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
   // service
   angular
       .module('app')
-      .service('logger', logger);
+      .service('loggerService', loggerService);
 
-  function logger() {
+  function loggerService() {
     this.logError = function(msg) {
       /* */
     };
@@ -703,9 +715,9 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
   // factory
   angular
       .module('app')
-      .factory('logger', logger);
+      .factory('loggerFactory', loggerFactory);
 
-  function logger() {
+  function loggerFactory() {
       return {
           logError: function(msg) {
             /* */
@@ -734,16 +746,22 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 ###### [Style [Y052](#style-y052)]
 
   - Expose the callable members of the service (its interface) at the top, using a technique derived from the [Revealing Module Pattern](http://addyosmani.com/resources/essentialjsdesignpatterns/book/#revealingmodulepatternjavascript).
-
+  
+  - The only exception is primitives. Declare them on the module.
+  
+  - Private methods go on the bottom, and are prefaced with an `_`.
+  
     *Why?*: Placing the callable members at the top makes it easy to read and helps you instantly identify which members of the service can be called and must be unit tested (and/or mocked).
 
     *Why?*: This is especially helpful when the file gets longer as it helps avoid the need to scroll to see what is exposed.
 
     *Why?*: Setting functions as you go can be easy, but when those functions are more than 1 line of code they can reduce the readability and cause more scrolling. Defining the callable interface via the returned service moves the implementation details down, keeps the callable interface up top, and makes it easier to read.
+  
+    *Why?*: If you declare a primitive up top, and then reference it in the the module, any change to the primitive directly will not be reflected in the module. They two will be different values.
 
   ```javascript
   /* avoid */
-  function dataService() {
+  function dataFactory() {
     var someValue = '';
     function save() {
       /* */
@@ -762,11 +780,11 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
   ```javascript
   /* recommended */
-  function dataService() {
-      var someValue = '';
+  function dataFactory() {
       var service = {
           save: save,
-          someValue: someValue,
+          // Primitive is declared directly on the module
+          someValue: '',
           validate: validate
       };
       return service;
@@ -775,11 +793,17 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
       function save() {
           /* */
-      };
+      }
 
       function validate() {
           /* */
-      };
+      }
+      
+      ////////////
+      
+      _function _private() {
+      
+      }
   }
   ```
 
@@ -807,7 +831,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
    * avoid
    * Using function expressions
    */
-   function dataservice($http, $location, $q, exception, logger) {
+   function dataserviceFactory($http, $location, $q, exception, logger) {
       var isPrimed = false;
       var primePromise;
 
@@ -848,7 +872,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
    * Using function declarations
    * and accessible members up top.
    */
-  function dataservice($http, $location, $q, exception, logger) {
+  function dataserviceFactory($http, $location, $q, exception, logger) {
       var isPrimed = false;
       var primePromise;
 
@@ -906,11 +930,11 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
   // dataservice factory
   angular
       .module('app.core')
-      .factory('dataservice', dataservice);
+      .factory('dataserviceFactory', dataserviceFactory);
 
-  dataservice.$inject = ['$http', 'logger'];
+  dataserviceFactory.$inject = ['$http', 'logger'];
 
-  function dataservice($http, logger) {
+  function dataserviceFactory($http, logger) {
       return {
           getAvengers: getAvengers
       };
@@ -1215,7 +1239,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
           },
           link: linkFunc,
           controller: ExampleController,
-          controllerAs: 'vm',
+          controllerAs: 'exampleCtrl',
           bindToController: true // because the scope is isolated
       };
 
@@ -1247,19 +1271,19 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
   ```html
   <!-- example.directive.html -->
   <div>hello world</div>
-  <div>max={{vm.max}}<input ng-model="vm.max"/></div>
-  <div>min={{vm.min}}<input ng-model="vm.min"/></div>
+  <div>max={{exampleCtrl.max}}<input ng-model="exampleCtrl.max"/></div>
+  <div>min={{exampleCtrl.min}}<input ng-model="exampleCtrl.min"/></div>
   ```
 
     Note: You can also name the controller when you inject it into the link function and access directive attributes as properties of the controller.
 
   ```javascript
   // Alternative to above example
-  function linkFunc(scope, el, attr, vm) {
+  function linkFunc(scope, el, attr, ctrl) {
       console.log('LINK: scope.min = %s *** should be undefined', scope.min);
       console.log('LINK: scope.max = %s *** should be undefined', scope.max);
-      console.log('LINK: vm.min = %s', vm.min);
-      console.log('LINK: vm.max = %s', vm.max);
+      console.log('LINK: ctrl.min = %s', ctrl.min);
+      console.log('LINK: ctrl.max = %s', ctrl.max);
   }
   ```
 
@@ -1288,7 +1312,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
               max: '='
           },
           controller: ExampleController,
-          controllerAs: 'vm',
+          controllerAs: 'exampleCtrl',
           bindToController: true
       };
 
@@ -1306,8 +1330,8 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
   ```html
   <!-- example.directive.html -->
   <div>hello world</div>
-  <div>max={{vm.max}}<input ng-model="vm.max"/></div>
-  <div>min={{vm.min}}<input ng-model="vm.min"/></div>
+  <div>max={{exampleCtrl.max}}<input ng-model="exampleCtrl.max"/></div>
+  <div>min={{exampleCtrl.min}}<input ng-model="exampleCtrl.min"/></div>
   ```
 
 **[Back to top](#table-of-contents)**
@@ -1401,7 +1425,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
           .when('/avengers', {
               templateUrl: 'avengers.html',
               controller: 'Avengers',
-              controllerAs: 'vm',
+              controllerAs: 'avengers',
               resolve: {
                   moviesPrepService: function(movieService) {
                       return movieService.getMovies();
@@ -1437,7 +1461,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
           .when('/avengers', {
               templateUrl: 'avengers.html',
               controller: 'Avengers',
-              controllerAs: 'vm',
+              controllerAs: 'avengers',
               resolve: {
                   moviesPrepService: moviesPrepService
               }
@@ -1541,7 +1565,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
     function outer() {
         var ddo = {
             controller: DashboardPanelController,
-            controllerAs: 'vm'
+            controllerAs: 'dashboardPanelCtrl'
         };
         return ddo;
 
@@ -1557,7 +1581,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
     function outer() {
         var ddo = {
             controller: DashboardPanelController,
-            controllerAs: 'vm'
+            controllerAs: 'dashboardPanelCtrl'
         };
         return ddo;
     }
@@ -1583,7 +1607,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
             .when('/avengers', {
                 templateUrl: 'avengers.html',
                 controller: 'AvengersController',
-                controllerAs: 'vm',
+                controllerAs: 'aventgersCtrl',
                 resolve: {
                     moviesPrepService: moviesPrepService
                 }
@@ -1663,8 +1687,8 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
         $routeProvider
             .when('/avengers', {
                 templateUrl: 'avengers.html',
-                controller: 'Avengers',
-                controllerAs: 'vm',
+                controller: 'AvengersController',
+                controllerAs: 'avengersCtrl',
                 resolve: { /* @ngInject */
                     moviesPrepService: function(movieService) {
                         return movieService.getMovies();
@@ -1766,7 +1790,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
     /* recommended */
     angular
         .module('blocks.exception')
-        .factory('exception', exception);
+        .factory('exceptionFactory', exceptionFactory);
 
     exception.$inject = ['logger'];
 
@@ -1849,25 +1873,11 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
   - Use consistent names for all components following a pattern that describes the component's feature then (optionally) its type. My recommended pattern is `feature.type.js`.
 
+  - Directories use dashes instead of camelCasing. `folder-name/`.
+  
     *Why?*: Provides a consistent way to quickly identify components.
 
     *Why?*: Provides pattern matching for any automated tasks.
-
-    ```javascript
-    /**
-     * common options
-     */
-
-    // Controllers
-    avengers.js
-    avengers.controller.js
-    avengersController.js
-
-    // Services/Factories
-    logger.js
-    logger.service.js
-    loggerService.js
-    ```
 
     ```javascript
     /**
@@ -1875,7 +1885,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
      */
 
     // controllers
-    avengers.controller.js
+    newAvengers.controller.js
     avengers.controller.spec.js
 
     // services/factories
@@ -1886,7 +1896,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
     constants.js
 
     // module definition
-    avengers.module.js
+    newAvengers.module.js
 
     // routes
     avengers.routes.js
@@ -1898,17 +1908,9 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
     // directives
     avenger-profile.directive.js
     avenger-profile.directive.spec.js
-    ```
-
-  Note: Another common convention is naming controller files without the word `controller` in the file name such as `avengers.js` instead of `avengers.controller.js`. All other conventions still hold using a suffix of the type. Controllers are the most common type of component so this just saves typing and is still easily identifiable. I recommend you choose 1 convention and be consistent for your team. My preference is `avengers.controller.js`.
-
-    ```javascript
-    /**
-     * recommended
-     */
-    // Controllers
-    avengers.js
-    avengers.spec.js
+    
+    // Folders
+    folder-name/
     ```
 
 ### Test File Names
@@ -1975,11 +1977,13 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 ### Factory Names
 ###### [Style [Y125](#style-y125)]
 
-  - Use consistent names for all factories named after their feature. Use camel-casing for services and factories. Avoid prefixing factories and services with `$`.
+  - Use consistent names for all factories named after their feature. Use camel-casing for services and factories. Avoid prefixing factories and services with `$`. Both service and factory filename should end with `.service.js`.
 
     *Why?*: Provides a consistent way to quickly identify and reference factories.
 
     *Why?*: Avoids name collisions with built-in factories and services that use the `$` prefix.
+    
+    *Why?*: Services and factories are the same for the consumer.
 
     ```javascript
     /**
@@ -1989,7 +1993,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
     // logger.service.js
     angular
         .module
-        .factory('logger', logger);
+        .factory('loggerService', loggerService);
 
     function logger() { }
     ```
@@ -1998,6 +2002,8 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 ###### [Style [Y126](#style-y126)]
 
   - Use consistent names for all directives using camel-case. Use a short prefix to describe the area that the directives belong (some example are company prefix or project prefix).
+  
+  - Use `c2fo` as the prefix for all c2fo directives.
 
     *Why?*: Provides a consistent way to quickly identify and reference components.
 
@@ -2009,11 +2015,11 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
     // avenger-profile.directive.js
     angular
         .module
-        .directive('xxAvengerProfile', xxAvengerProfile);
+        .directive('c2foAvengerProfile', c2foAvengerProfile);
 
-    // usage is <xx-avenger-profile> </xx-avenger-profile>
+    // usage is <c2fo-avenger-profile> </c2fo-avenger-profile>
 
-    function xxAvengerProfile() { }
+    function c2foAvengerProfile() { }
     ```
 
 ### Modules
@@ -2144,13 +2150,8 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
         components/
             calendar.directive.js
             calendar.directive.html
-            user-profile.directive.js
-            user-profile.directive.html
-        layout/
-            shell.html
-            shell.controller.js
-            topnav.html
-            topnav.controller.js
+            userProfile.directive.js
+            userProfile.directive.html
         people/
             attendees.html
             attendees.controller.js
@@ -2161,15 +2162,15 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
             speaker-detail.controller.js
         services/
             data.service.js
-            localstorage.service.js
+            localStorage.service.js
             logger.service.js
             spinner.service.js
         sessions/
             sessions.html
             sessions.controller.js
             sessions.routes.js
-            session-detail.html
-            session-detail.controller.js
+            sessionDetail.html
+            sessionDetail.controller.js
     ```
 
       ![Sample App Structure](https://raw.githubusercontent.com/johnpapa/angular-styleguide/master/assets/modularity-2.png)
@@ -2535,14 +2536,14 @@ Unit testing helps maintain clean code, as such I included some of my recommenda
     (function() {
       angular
           .module('app')
-          .factory('logger', logger);
+          .factory('loggerFactory', loggerFactory);
 
       /**
        * @namespace Logger
        * @desc Application wide logger
        * @memberOf Factories
        */
-      function logger($log) {
+      function loggerFactory($log) {
           var service = {
              logError: logError
           };
@@ -2735,27 +2736,6 @@ Unit testing helps maintain clean code, as such I included some of my recommenda
 
 ## Constants
 
-### Vendor Globals
-###### [Style [Y240](#style-y240)]
-
-  - Create an Angular Constant for vendor libraries' global variables.
-
-    *Why?*: Provides a way to inject vendor libraries that otherwise are globals. This improves code testability by allowing you to more easily know what the dependencies of your components are (avoids leaky abstractions). It also allows you to mock these dependencies, where it makes sense.
-
-    ```javascript
-    // constants.js
-
-    /* global toastr:false, moment:false */
-    (function() {
-        'use strict';
-
-        angular
-            .module('app.core')
-            .constant('toastr', toastr)
-            .constant('moment', moment);
-    })();
-    ```
-
 ###### [Style [Y241](#style-y241)]
 
   - Use constants for values that do not change and do not come from another service. When constants are used only for a module that may be reused in multiple applications, place constants in a file per module named after the module. Until this is required, keep constants in the main module in a `constants.js` file.
@@ -2885,32 +2865,6 @@ Use file templates or snippets to help follow consistent styles and patterns. He
     ngroute      // defines an Angular ngRoute 'when' definition
     ngtranslate  // uses $translate service with its promise
     ```
-
-**[Back to top](#table-of-contents)**
-
-## Yeoman Generator
-###### [Style [Y260](#style-y260)]
-
-You can use the [HotTowel yeoman generator](http://jpapa.me/yohottowel) to create an app that serves as a starting point for Angular that follows this style guide.
-
-1. Install generator-hottowel
-
-  ```
-  npm install -g generator-hottowel
-  ```
-
-2. Create a new folder and change directory to it
-
-  ```
-  mkdir myapp
-  cd myapp
-  ```
-
-3. Run the generator
-
-  ```
-  yo hottowel helloWorld
-  ```
 
 **[Back to top](#table-of-contents)**
 
@@ -3044,17 +2998,6 @@ Use [Gulp](http://gulpjs.com) or [Grunt](http://gruntjs.com) for creating automa
 
 ## Angular docs
 For anything else, API reference, check the [Angular documentation](//docs.angularjs.org/api).
-
-## Contributing
-
-Open an issue first to discuss potential changes/additions. If you have questions with the guide, feel free to leave them as issues in the repository. If you find a typo, create a pull request. The idea is to keep the content up to date and use github’s native feature to help tell the story with issues and PR’s, which are all searchable via google. Why? Because odds are if you have a question, someone else does too! You can learn more here at about how to contribute.
-
-*By contributing to this repository you are agreeing to make your content available subject to the license of this repository.*
-
-### Process
-    1. Discuss the changes in a GitHub issue.
-    2. Open a Pull Request, reference the issue, and explain the change and why it adds value.
-    3. The Pull Request will be evaluated and either merged or declined.
 
 ## License
 
