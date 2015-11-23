@@ -1872,6 +1872,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 ###### [Style [Y121](#style-y121)]
 
   - Use consistent names for all components following a pattern that describes the component's feature then (optionally) its type. My recommended pattern is `feature.type.js`.
+  - File should use underscores to break a long module name. `NewAvengers` for controller should be `new_avengers` in the file name.
 
   - Directories use dashes instead of camelCasing. `folder-name/`.
   
@@ -1885,7 +1886,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
      */
 
     // controllers
-    newAvengers.controller.js
+    new_avengers.controller.js
     avengers.controller.spec.js
 
     // services/factories
@@ -1896,7 +1897,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
     constants.js
 
     // module definition
-    newAvengers.module.js
+    new_avengers.module.js
 
     // routes
     avengers.routes.js
@@ -1906,8 +1907,8 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
     avengers.config.js
 
     // directives
-    avenger-profile.directive.js
-    avenger-profile.directive.spec.js
+    avenger_profile.directive.js
+    avenger_profile.directive.spec.js
     
     // Folders
     folder-name/
@@ -1929,7 +1930,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
     avengers.controller.spec.js
     logger.service.spec.js
     avengers.routes.spec.js
-    avenger-profile.directive.spec.js
+    avenger_profile.directive.spec.js
     ```
 
 ### Controller Names
