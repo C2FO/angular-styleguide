@@ -1872,7 +1872,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 ###### [Style [Y121](#style-y121)]
 
   - Use consistent names for all components following a pattern that describes the component's feature then (optionally) its type. My recommended pattern is `feature.type.js`.
-  - File should use underscores to break a long module name. `NewAvengers` for controller should be `new_avengers` in the file name.
+  - File names should use underscores to break a long module name. `NewAvengers` for controller should be `new_avengers` in the file name.
 
   - Directories use dashes instead of camelCasing. `folder-name/`.
   
